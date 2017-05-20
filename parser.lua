@@ -37,7 +37,6 @@ function makeBezierStroke(path)
     if data[i] == "M" then
       currentX, currentY = data[i+1], data[i+2]
       i = i + 2
-      print("M")
     elseif data[i] == "C" then -- absolute
       table.insert(stroke, love.math.newBezierCurve(
         currentX, currentY,
@@ -47,7 +46,6 @@ function makeBezierStroke(path)
       ))
       currentX, currentY = data[i+5], data[i+6]
       i = i + 6
-      print("C")
     elseif data[i] == "c" then -- relative to current
       table.insert(stroke, love.math.newBezierCurve(
         currentX, currentY,
@@ -56,7 +54,6 @@ function makeBezierStroke(path)
         currentX + data[i+5], currentY + data[i+6]
       ))
       currentX, currentY = currentX + data[i+5], currentY + data[i+6]
-      print("c")
     end
   end
 
