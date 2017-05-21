@@ -1,8 +1,7 @@
 parser = {}
 
-svg = ""
-width, height = 0, 0
-currentRender = nil
+local svg = ""
+local width, height = 0, 0
 
 function parser.loadSVG(text)
   svg = text
@@ -10,7 +9,6 @@ function parser.loadSVG(text)
   width = tonumber(svg:match(pattern))
   pattern = "<svg.-height=\"(%d-)\""
   height = tonumber(svg:match(pattern))
-  currentRender = nil
 end
 
 function getPaths()

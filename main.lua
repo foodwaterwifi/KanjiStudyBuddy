@@ -23,11 +23,11 @@ function love.load()
   gui.screen = "practice"
 end
 
-function inBox(x, y, bx, by, bxsize, bysize)
+function isInBox(x, y, bx, by, bxsize, bysize)
   return (x >= bx and y >= by and x <= bx + bxsize and y <= by + bysize)
 end
 
-function dist(x1, y1, x2, y2)
+function magnitude(x1, y1, x2, y2)
   return math.sqrt((x1-x2)^2 + (y1-y2)^2)
 end
 
@@ -35,7 +35,7 @@ function love.mousepressed(x, y, button, isTouch)
   if gui.screen == "none" then return end
   if gui.screen == "practice" then
     local brush = gui.practice.brush
-    if inBox(x, y, gui.practice.kanjiArea.x, gui.practice.kanjiArea.y, gui.practice.kanjiArea.size, gui.practice.kanjiArea.size) then
+    if isInBox(x, y, gui.practice.kanjiArea.x, gui.practice.kanjiArea.y, gui.practice.kanjiArea.size, gui.practice.kanjiArea.size) then
       brush.curve = {x, y} -- start the curve
       brush.drawing = true
     end
@@ -48,6 +48,14 @@ function love.mousereleased(x, y, button, isTouch)
     local brush = gui.practice.brush
     if brush.drawing then
       brush.drawing = false
+      for _, stroke in pairs(gui.practice.currentKanji) do
+        local baseCurve = lineop.strokeToCurve(stroke)
+        local pass, reason = lineop.similarityTest(baseCurve, brush.curve, gui.practice.kanjiArea.size)
+        if pass then
+          brush.curve = baseCurve
+          break
+        end
+      end
       -- do stuff here
     end
   end
@@ -58,7 +66,7 @@ function love.mousemoved(x, y, dx, dy, isTouch)
   if gui.screen == "practice" then
     local brush = gui.practice.brush
     if brush.drawing then
-      if dist(x, y, brush.curve[#brush.curve-1], brush.curve[#brush.curve]) >= 5 then
+      if magnitude(x, y, brush.curve[#brush.curve-1], brush.curve[#brush.curve]) >= 5 then
         table.insert(brush.curve, x); table.insert(brush.curve, y)
       end
     end
